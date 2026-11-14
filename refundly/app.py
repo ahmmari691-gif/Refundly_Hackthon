@@ -1,4 +1,5 @@
 """Local Refundly demo. Python 3.9+, standard library only."""
+import staff
 import argparse
 import json
 from datetime import date, timedelta
@@ -25,8 +26,9 @@ def day(value):
     except (TypeError,ValueError): raise ValueError('Enter valid dates.')
 
 def analyze(d):
-    if not isinstance(d,dict) or d.get('state') not in RULES: raise ValueError('Select a supported state.')
-    rule=RULES[d['state']]; start,end=day(d.get('move_in')),day(d.get('move_out'))
+    active_rules=staff.rules_snapshot(RULES)
+    if not isinstance(d,dict) or d.get('state') not in active_rules: raise ValueError('Select a supported state.')
+    rule=active_rules[d['state']]; start,end=day(d.get('move_in')),day(d.get('move_out'))
     if start>end or end>date.today(): raise ValueError('Move-out must follow move-in and cannot be in the future.')
     deposit,returned=money(d.get('deposit')),money(d.get('returned',0))
     if not deposit or returned>deposit: raise ValueError('Check the deposit and returned amounts.')
@@ -77,22 +79,42 @@ def letter(d,r):
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self,*a,**kw): super().__init__(*a,directory=str(ROOT/'static'),**kw)
     def end_headers(self):
-        self.send_header('Cache-Control','no-store'); self.send_header('X-Content-Type-Options','nosniff'); super().end_headers()
+        self.send_header('Referrer-Policy','no-referrer'); self.send_header('X-Frame-Options','DENY'); self.send_header('Cache-Control','no-store'); self.send_header('X-Content-Type-Options','nosniff'); super().end_headers()
     def respond(self,status,data):
-        raw=json.dumps(data).encode(); self.send_response(status); self.send_header('Content-Type','application/json'); self.send_header('Content-Length',str(len(raw))); self.end_headers(); self.wfile.write(raw)
+        raw=json.dumps(data).encode(); self.send_response(status);
+        for k,v in getattr(self,'extra_headers',{}).items(): self.send_header(k,v)
+        self.extra_headers={}
+        self.send_header('Content-Type','application/json'); self.send_header('Content-Length',str(len(raw))); self.end_headers(); self.wfile.write(raw)
+    def valid_host(self):
+        return self.headers.get("Host", "").split(":")[0] in ("127.0.0.1", "localhost")
     def do_GET(self):
-        if self.path=='/api/rules': return self.respond(200,RULES)
+        if not self.valid_host():return self.respond(403,{"error":"Local host required."})
+        if staff.handle(self,'GET'):return
+        if self.path=='/api/config':return self.respond(200,{k:v for k,v in staff.configuration().items() if k!='announcement'})
+        if self.path=='/api/rules': return self.respond(200,staff.rules_snapshot(RULES))
         if self.path=='/health': return self.respond(200,{'ok':True})
         return super().do_GET()
     def do_POST(self):
-        if self.path not in ['/api/analyze','/api/letter']: return self.respond(404,{'error':'Not found'})
+        if not self.valid_host():return self.respond(403,{"error":"Local host required."})
+        if self.path not in ['/api/analyze','/api/letter','/api/document.pdf'] and not self.path.startswith('/api/staff/'): return self.respond(404,{'error':'Not found'})
         try:
             size=int(self.headers.get('Content-Length',0))
             if not 0<size<=100000: raise ValueError('Invalid request size.')
-            d=json.loads(self.rfile.read(size)); r=analyze(d)
+            d=json.loads(self.rfile.read(size))
+            if not isinstance(d,dict):raise ValueError('Expected a JSON object.')
+            if staff.handle(self,'POST',d):return
+            if self.path=='/api/document.pdf':
+                from pdf_export import document_pdf
+                content=d.get('text','')
+                if not isinstance(content,str) or not 1<=len(content)<=30000:raise ValueError('Document text must contain 1–30000 characters.')
+                pdf=document_pdf(content, str(d.get('title','Security deposit correspondence'))[:70])
+                self.send_response(200);self.send_header('Content-Type','application/pdf');self.send_header('Content-Disposition','attachment; filename=Refundly-document.pdf');self.send_header('Content-Length',str(len(pdf)));self.end_headers();self.wfile.write(pdf);return
+            if staff.configuration().get('maintenance'):return self.respond(503,{'error':'Reviews are temporarily paused. Please try again later.'})
+            r=analyze(d)
             self.respond(200,{'letter':letter(d,r)} if self.path=='/api/letter' else r)
         except (ValueError,TypeError,AttributeError,KeyError) as e: self.respond(400,{'error':str(e) or 'Invalid input.'})
 if __name__=='__main__':
     p=argparse.ArgumentParser(); p.add_argument('--port',type=int,default=8000); a=p.parse_args()
-    print(f'Refundly: http://127.0.0.1:{a.port}',flush=True)
+    staff.initialize(RULES)
+    print(f'Refundly: http://127.0.0.1:{a.port} — staff access details: {staff.DB_PATH.parent / "staff-access.txt"}',flush=True)
     ThreadingHTTPServer(('127.0.0.1',a.port),Handler).serve_forever()

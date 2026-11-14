@@ -8,3 +8,6 @@
 .refundly-logo img{position:absolute;width:181.82%;height:191.26%;max-width:none;left:-40.91%;top:-50.22%;object-fit:fill}
 
 .wordmark{display:inline-flex;align-items:center;gap:11px}.wordmark .refundly-logo{font-size:inherit;margin:0;letter-spacing:0}footer .refundly-logo{mix-blend-mode:normal;background:#fff;border-radius:2px} @media(max-width:600px){.wordmark{gap:8px}.refundly-logo{width:43px;height:28px;flex-basis:43px}}
+
+.staff-link{font-size:10px;color:#777e93;white-space:nowrap}.try-example{display:inline-block;font-size:10px;margin-top:9px;color:#7c849a}.navigation{gap:20px}.nav-links{margin-left:auto}.footer-top{flex-wrap:wrap}.footer-top .wordmark{flex-shrink:0}@media(max-width:600px){.navigation{flex-wrap:wrap;gap:10px}.navigation .wordmark{margin-right:auto}.staff-link{font-size:9px}.navigation .button.small{margin-left:auto}.try-example{font-size:10px}}
+:root{--muted:#646775}.micro,.hero-side small,.fine-number,.explore,.caption,.paper-top,.paper-label,.paper-bottom,.states>p:last-child,details p,.try-example,.staff-link{color:#666c7b}.hero .eyebrow,.eyebrow{color:#5b6278}.principles .eyebrow{color:#d2d7e3}.number{color:#6b7185}.principle-grid p{color:#d0d5e1}.footer-top p,.footer-bottom{color:#d0d6e4}.status{color:#705c39}
