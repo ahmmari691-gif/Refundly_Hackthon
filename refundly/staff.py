@@ -51,6 +51,12 @@ def initialize(rules):
         for state,rule in rules.items():
             if not c.execute('SELECT 1 FROM rule_versions WHERE state=?',(state,)).fetchone():
                 c.execute('INSERT INTO rule_versions(state,data,status,created,actor) VALUES(?,?,?,?,?)',(state,pack({**rule,'enabled':True,'reviewed':'2026-11-14'}),'published',int(time.time()),'system'))
+        if not c.execute('SELECT 1 FROM users').fetchone() and os.environ.get('REFUNDLY_HOSTED') == '1':
+            email=os.environ.get('REFUNDLY_ADMIN_EMAIL', '').strip()
+            password=os.environ.get('REFUNDLY_ADMIN_PASSWORD', '')
+            if not email or len(password)<16:
+                raise RuntimeError('Set REFUNDLY_ADMIN_EMAIL and REFUNDLY_ADMIN_PASSWORD (at least 16 characters).')
+            create_user(c,email,'Administrator','admin',password)
         if not c.execute('SELECT 1 FROM users').fetchone():
             access=['REFUNDLY — LOCAL DEMO STAFF ACCOUNTS','Open http://127.0.0.1:8000/staff.html','First sign-in: add the displayed setup key to an authenticator app, then enter its 6-digit code.','These passwords are local to this computer. This file is not included in source archives.','']
             for email,name,role in [('admin@refundly.demo','Demo Administrator','admin'),('manager@refundly.demo','Demo Manager','manager')]:
@@ -89,7 +95,7 @@ def session_response(handler,c,user):
     c.execute('DELETE FROM sessions WHERE expires<?',(int(time.time()),))
     c.execute('INSERT INTO sessions VALUES(?,?,?,?,?)',(digest(token),user['id'],csrf,int(time.time())+8*3600,'session'))
     audit(c,user['email'],'sign_in','session')
-    handler.extra_headers={'Set-Cookie':f'refundly_staff={token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=28800'}
+    handler.extra_headers={'Set-Cookie':f'refundly_staff={token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=28800' + ('; Secure' if os.environ.get('REFUNDLY_HOSTED') == '1' else '')}
     return {'user':{k:user[k] for k in ['id','email','name','role']},'csrf':csrf}
 
 def login(handler,d):
@@ -223,7 +229,7 @@ def handle(handler,method,d=None):
     if not path.startswith('/api/staff/'):return False
     try:
         if method=='POST':
-            expected=f'http://{handler.headers.get("Host", "")}'
+            expected=(os.environ.get('PUBLIC_BASE_URL') or os.environ.get('RENDER_EXTERNAL_URL') or f'http://{handler.headers.get("Host", "")}').rstrip('/')
             if handler.headers.get('Origin')!=expected or not handler.headers.get('Content-Type','').startswith('application/json'):
                 handler.respond(403,{'error':'Same-origin JSON requests are required.'});return True
         if path=='/api/staff/login' and method=='POST':status,result=login(handler,d)
@@ -237,7 +243,7 @@ def handle(handler,method,d=None):
             elif path=='/api/staff/action' and method=='POST':status,result=modify(user,d)
             elif path=='/api/staff/logout' and method=='POST':
                 with connect() as c:c.execute('DELETE FROM sessions WHERE user_id=?',(user['id'],));audit(c,user['email'],'sign_out','all_sessions')
-                handler.extra_headers={'Set-Cookie':'refundly_staff=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0'};status,result=200,{'message':'Signed out.'}
+                handler.extra_headers={'Set-Cookie':'refundly_staff=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0' + ('; Secure' if os.environ.get('REFUNDLY_HOSTED') == '1' else '')};status,result=200,{'message':'Signed out.'}
             else:status,result=404,{'error':'Not found.'}
         handler.respond(status,result)
     except (ValueError,TypeError,KeyError,sqlite3.IntegrityError) as e:handler.respond(400,{'error':str(e)})
