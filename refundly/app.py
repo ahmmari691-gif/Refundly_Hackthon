@@ -7,12 +7,7 @@ from decimal import Decimal, InvalidOperation
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 ROOT = Path(__file__).resolve().parent
-RULES = {
-'CA': dict(name='California', days=21, law='California Civil Code § 1950.5', url='https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1950.5.', note='Generally 21 days to account for the deposit and return the balance. Receipt, estimate, and photo requirements and exceptions need review.', remedy='Bad-faith retention may support additional damages up to twice the deposit. A court decides; this is not automatic.'),
-'NY': dict(name='New York', days=14, law='N.Y. General Obligations Law § 7-108', url='https://www.nysenate.gov/legislation/laws/GOB/7-108', note='Covered tenancies: itemization and balance within 14 days. Rent-regulated and other excluded housing need separate review.', remedy='Willful violations may support punitive damages up to twice the deposit, in addition to actual damages.'),
-'TX': dict(name='Texas', days=30, law='Texas Property Code §§ 92.103–92.109', url='https://statutes.capitol.texas.gov/Docs/PR/htm/PR.92.htm#92.103', note='Generally 30 days after surrender. A written forwarding address is required before the refund duty applies. Unpaid-rent exceptions affect itemization.', remedy='Bad-faith retention may support $100 plus three times the amount wrongfully withheld and reasonable attorney fees.'),
-'FL': dict(name='Florida', days=30, law='Florida Statutes § 83.49', url='https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0083/Sections/0083.49.html', note='15 days for return with no claim; 30 days for compliant claim notice after termination. Object within 15 days of receipt. Early departure and notice exceptions need review.', remedy='No automatic damages multiplier. Late notice can forfeit use of the deposit, without eliminating a separate damages claim. Court costs and attorney fees may apply.'),
-'IL': dict(name='Illinois', days=30, law='765 ILCS 710/1', url='https://www.ilga.gov/Legislation/ILCS/Articles?ActID=2202&Chapter=PROPERTY&ChapterID=62&MajorTopic=RIGHTS+AND+REMEDIES', note='Damage itemization generally within 30 days of vacancy or end of possession, whichever is later. Without required documentation, full return within 45 days. Receipt exceptions and local rules may apply.', remedy='Specified refusal or bad-faith failures may support liability equal to twice the deposit due, plus court costs and reasonable attorney fees.')}
+RULES = json.loads((ROOT / 'law_catalog.json').read_text())
 
 def money(value):
     try:

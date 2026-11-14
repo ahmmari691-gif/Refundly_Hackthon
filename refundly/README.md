@@ -58,3 +58,23 @@ python3 -m unittest discover -v
 Rules sources reviewed November 14, 2026: links in `app.py` and UI; California court guidance at https://selfhelp.courts.ca.gov/guide-security-deposits-california was accessible, direct statute access returned 403. Texas context: https://guides.sll.texas.gov/landlord-tenant-law/security-deposit-refunds . Rules remain preliminary and require legal review before any production use.
 
 Artwork details are in `ARTWORK.md`. The supplied Refundly logo is used unchanged, framed with CSS.
+
+## State-law provenance
+`law_catalog.json` is the version-controlled baseline, checked 2026-11-14.
+NY, TX and FL summaries were compared with official statutory text. CA was
+checked against official DRE guidance because the statute endpoint was blocked.
+IL remains explicitly partial: official indexed excerpts confirmed deadlines,
+but the full text and remedy still need rechecking. These are editorial checks,
+not attorney certification, and do not cover all local rules or case law.
+
+The public State law library shows the source actually checked, sections, date,
+limitations and published/archived record history. Drafts and staff identities
+are private. Admins must supply a change summary, source-check method and date;
+only approved state-source HTTPS hosts are accepted. Publication preserves the
+previous version; restoration creates a new record. Legacy system entries are
+migrated without overwriting administrator edits or inventing prior checks.
+
+On free Render, SQLite staff edits/history are ephemeral. The committed baseline
+survives redeployment; later admin changes require exporting history JSON and
+committing a reviewed baseline, or moving SQLite to persistent storage. No
+scheduled legal monitoring or automatic verification is claimed.

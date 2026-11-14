@@ -65,3 +65,27 @@ class StaffTest(unittest.TestCase):
     def test_demo_fixture_no_real_case_data(self):
         for t in staff.get_data(self.admin)['tickets']:self.assertTrue(t['data']['demo']);self.assertTrue(t['email'].endswith('@example.test'))
 if __name__=='__main__':unittest.main()
+
+class LawHistoryTest(StaffTest):
+    def test_source_check_validation(self):
+        for field,value in [('url','https://www.nysenate.gov.evil.test/law'),('checked_url','javascript:alert(1)'),('reviewed','2999-01-01'),('change_summary',''),('verification','verified')]:
+            rule={**RULES['NY'],field:value}
+            with self.assertRaises(ValueError):staff.modify(self.admin,{'action':'rule_save','state':'NY','data':rule})
+    def test_history_is_public_but_drafts_and_actors_are_private(self):
+        rule={**RULES['NY'],'change_summary':'A private draft note'}
+        staff.modify(self.admin,{'action':'rule_save','state':'NY','data':rule})
+        public=json.dumps(staff.rules_snapshot(RULES))
+        self.assertNotIn('A private draft note',public);self.assertNotIn(self.admin['email'],public)
+        with staff.connect() as c:rid=c.execute('SELECT max(id) FROM rule_versions').fetchone()[0]
+        staff.modify(self.admin,{'action':'rule_publish','id':rid})
+        history=staff.rules_snapshot(RULES)['NY']['history']
+        self.assertEqual(len(history),2);self.assertEqual(history[0]['data']['change_summary'],'A private draft note')
+        staff.initialize(RULES)
+        self.assertEqual(staff.rules_snapshot(RULES)['NY']['change_summary'],'A private draft note')
+    def test_legacy_system_seed_migration_is_idempotent(self):
+        with staff.connect() as c:
+            legacy={k:v for k,v in RULES['CA'].items() if k not in ['revision','verification','check_note','checked_url','change_summary']}
+            c.execute("UPDATE rule_versions SET data=? WHERE state='CA'",(json.dumps(legacy),))
+        staff.initialize(RULES);staff.initialize(RULES)
+        history=staff.rules_snapshot(RULES)['CA']['history']
+        self.assertEqual(len(history),2);self.assertIsNone(history[1]['data']['verification'])

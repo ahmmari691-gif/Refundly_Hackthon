@@ -1,0 +1,102 @@
+{
+  "CA": {
+    "name": "California",
+    "days": 21,
+    "law": "California Civil Code § 1950.5",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1950.5.",
+    "note": "Generally 21 days to account for the deposit and return the balance. Receipt, estimate, and photo requirements and exceptions need review.",
+    "remedy": "Bad-faith retention may support additional damages up to twice the deposit. A court decides; this is not automatic.",
+    "enabled": true,
+    "reviewed": "2026-11-14",
+    "verification": "guidance",
+    "check_note": "Checked against California Department of Real Estate guidance. Direct statutory page was unavailable; statutory text still needs a direct recheck.",
+    "change_summary": "Initial documented source check; added provenance and scope. Earlier demo records had no documented verification evidence.",
+    "revision": "2026-11-14.1",
+    "sections": [
+      "§ 1950.5(g): accounting and documentation",
+      "§ 1950.5(b): permitted deductions",
+      "§ 1950.5(l): bad-faith remedy"
+    ],
+    "checked_url": "https://dre.ca.gov/publications/ResourceGuidebook/gb10_movingout.html"
+  },
+  "NY": {
+    "name": "New York",
+    "days": 14,
+    "law": "N.Y. General Obligations Law § 7-108",
+    "url": "https://www.nysenate.gov/legislation/laws/GOB/7-108",
+    "note": "Covered tenancies: itemization and balance within 14 days. Rent-regulated and other excluded housing need separate review.",
+    "remedy": "Willful violations may support punitive damages up to twice the deposit, in addition to actual damages.",
+    "enabled": true,
+    "reviewed": "2026-11-14",
+    "verification": "statute",
+    "check_note": "Compared the displayed summary with the official statutory text. This is an editorial source check, not attorney review.",
+    "change_summary": "Initial documented source check; added provenance and scope. Earlier demo records had no documented verification evidence.",
+    "revision": "2026-11-14.1",
+    "sections": [
+      "§ 7-108(1-a)(e): 14-day accounting",
+      "§ 7-108(1-a)(b): permitted deductions",
+      "§ 7-108(1-a)(g): liability"
+    ],
+    "checked_url": "https://www.nysenate.gov/legislation/laws/GOB/7-108"
+  },
+  "TX": {
+    "name": "Texas",
+    "days": 30,
+    "law": "Texas Property Code §§ 92.103–92.109",
+    "url": "https://tcss.legis.texas.gov/resources/PR/htm/PR.92.htm#92.103",
+    "note": "Generally 30 days after surrender. A written forwarding address is required before the refund duty applies. Unpaid-rent exceptions affect itemization.",
+    "remedy": "Bad-faith retention may support $100 plus three times the amount wrongfully withheld and reasonable attorney fees.",
+    "enabled": true,
+    "reviewed": "2026-11-14",
+    "verification": "statute",
+    "check_note": "Compared the displayed summary with the official statutory text. This is an editorial source check, not attorney review.",
+    "change_summary": "Initial documented source check; added provenance and scope. Earlier demo records had no documented verification evidence.",
+    "revision": "2026-11-14.1",
+    "sections": [
+      "§§ 92.103, 92.107: deadline and forwarding address",
+      "§ 92.104: deductions and accounting",
+      "§ 92.109: bad-faith liability"
+    ],
+    "checked_url": "https://tcss.legis.texas.gov/resources/PR/htm/PR.92.htm#92.103"
+  },
+  "FL": {
+    "name": "Florida",
+    "days": 30,
+    "law": "Florida Statutes § 83.49",
+    "url": "https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0083/Sections/0083.49.html",
+    "note": "15 days for return with no claim; 30 days for compliant claim notice after termination. Object within 15 days of receipt. Early departure and notice exceptions need review.",
+    "remedy": "No automatic damages multiplier. Late notice can forfeit use of the deposit, without eliminating a separate damages claim. Court costs and attorney fees may apply.",
+    "enabled": true,
+    "reviewed": "2026-11-14",
+    "verification": "statute",
+    "check_note": "Compared the displayed summary with the official statutory text. This is an editorial source check, not attorney review.",
+    "change_summary": "Initial documented source check; added provenance and scope. Earlier demo records had no documented verification evidence.",
+    "revision": "2026-11-14.1",
+    "sections": [
+      "§ 83.49(3)(a)–(b): return, notice and objection",
+      "§ 83.49(3)(a): loss of deposit setoff",
+      "§ 83.49(3)(c): costs and fees"
+    ],
+    "checked_url": "https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0083/Sections/0083.49.html"
+  },
+  "IL": {
+    "name": "Illinois",
+    "days": 30,
+    "law": "765 ILCS 710/1",
+    "url": "https://www.ilga.gov/Legislation/ILCS/Fulltext?DocName=076507100K1",
+    "note": "Damage itemization generally within 30 days of vacancy or end of possession, whichever is later. Without required documentation, full return within 45 days. Receipt exceptions and local rules may apply.",
+    "remedy": "Specified refusal or bad-faith failures may support liability equal to twice the deposit due, plus court costs and reasonable attorney fees.",
+    "enabled": true,
+    "reviewed": "2026-11-14",
+    "verification": "partial",
+    "check_note": "Official search excerpts confirmed the 30/45-day rules. The full ILGA page could not be retrieved; receipt exceptions and the remedy require a full-text recheck.",
+    "change_summary": "Initial documented source check; added provenance and scope. Earlier demo records had no documented verification evidence.",
+    "revision": "2026-11-14.1",
+    "sections": [
+      "765 ILCS 710/1(a): itemization and return",
+      "765 ILCS 710/1(a)–(b): receipts and exceptions",
+      "765 ILCS 710/1(c): conditional remedy (recheck pending)"
+    ],
+    "checked_url": "https://www.ilga.gov/Legislation/ILCS/Fulltext?DocName=076507100K1"
+  }
+}

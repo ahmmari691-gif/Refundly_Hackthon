@@ -2,7 +2,7 @@
 import base64, hashlib, hmac, json, os, re, secrets, sqlite3, struct, time
 from pathlib import Path
 from http.cookies import SimpleCookie
-from urllib.parse import quote
+from urllib.parse import quote, urlsplit
 
 DB_PATH = Path(os.environ.get('REFUNDLY_DB', str(Path(__file__).parent / '.local' / 'staff.sqlite3')))
 
@@ -50,7 +50,13 @@ def initialize(rules):
             c.execute('INSERT OR IGNORE INTO config VALUES(?,?)',(key,pack(value)))
         for state,rule in rules.items():
             if not c.execute('SELECT 1 FROM rule_versions WHERE state=?',(state,)).fetchone():
-                c.execute('INSERT INTO rule_versions(state,data,status,created,actor) VALUES(?,?,?,?,?)',(state,pack({**rule,'enabled':True,'reviewed':'2026-11-14'}),'published',int(time.time()),'system'))
+                c.execute('INSERT INTO rule_versions(state,data,status,created,actor) VALUES(?,?,?,?,?)',(state,pack({**rule,'enabled':True}),'published',int(time.time()),'system'))
+        # Upgrade only undocumented system seeds. Never overwrite administrator work.
+        for state,rule in rules.items():
+            current=c.execute("SELECT * FROM rule_versions WHERE state=? AND status='published'",(state,)).fetchone()
+            if current and current['actor']=='system' and not json.loads(current['data']).get('revision'):
+                c.execute("UPDATE rule_versions SET status='archived' WHERE id=?",(current['id'],))
+                c.execute('INSERT INTO rule_versions(state,data,status,created,actor) VALUES(?,?,?,?,?)',(state,pack(rule),'published',int(time.time()),'system'))
         if not c.execute('SELECT 1 FROM users').fetchone() and os.environ.get('REFUNDLY_HOSTED') == '1':
             email=os.environ.get('REFUNDLY_ADMIN_EMAIL', '').strip()
             password=os.environ.get('REFUNDLY_ADMIN_PASSWORD', '')
@@ -74,9 +80,17 @@ def initialize(rules):
 def rules_snapshot(fallback):
     if not DB_PATH.exists(): return fallback
     with connect() as c:
-        rows=c.execute("SELECT state,data FROM rule_versions WHERE status='published' ORDER BY id").fetchall()
+        rows=c.execute("SELECT * FROM rule_versions WHERE status IN ('published','archived') ORDER BY id").fetchall()
     result={}
-    for row in rows: result[row['state']]=json.loads(row['data'])
+    for row in rows:
+        if row['status']=='published':
+            result[row['state']]=json.loads(row['data'])
+            result[row['state']]['version_id']=row['id']
+    for state,rule in result.items():
+        rule['history']=[{'id':row['id'],'status':row['status'],'recorded':row['created'],
+            'data':{key:json.loads(row['data']).get(key) for key in ['days','law','url','note','remedy','reviewed','verification','checked_url','check_note','change_summary','sections']}}
+            for row in reversed(rows) if row['state']==state]
+
     return {k:v for k,v in result.items() if v.get('enabled',True)} or {}
 
 def configuration():
@@ -174,12 +188,19 @@ def modify(user,d):
             state=d.get('state');rule=d.get('data')
             if state not in ['CA','NY','TX','FL','IL'] or not isinstance(rule,dict):raise ValueError('Choose one of the five supported states.')
             if type(rule.get('days'))!=int or not 1<=rule['days']<=365:raise ValueError('Deadline must be 1–365 days.')
-            for key in ['name','law','url','note','remedy','reviewed']:
+            for key in ['name','law','url','note','remedy','reviewed','checked_url','check_note','change_summary']:
                 if not isinstance(rule.get(key),str) or not 1<=len(rule[key])<=3000:raise ValueError('Fill all rule fields.')
-            if not rule['url'].startswith('https://'):raise ValueError('Use an HTTPS official source.')
+            hosts={'CA':{'leginfo.legislature.ca.gov','dre.ca.gov','selfhelp.courts.ca.gov'},'NY':{'www.nysenate.gov'},'TX':{'tcss.legis.texas.gov','statutes.capitol.texas.gov','guides.sll.texas.gov'},'FL':{'www.leg.state.fl.us'},'IL':{'www.ilga.gov','my.ilga.gov'}}
+            for key in ['url','checked_url']:
+                parsed=urlsplit(rule[key])
+                if parsed.scheme!='https' or parsed.hostname not in hosts[state] or parsed.username or parsed.password or parsed.port not in [None,443]:raise ValueError('Use an approved official state source URL.')
+            if rule.get('verification') not in ['statute','guidance','partial']:raise ValueError('Choose a source-check status.')
+            if not isinstance(rule.get('sections'),list) or not 1<=len(rule['sections'])<=10 or any(not isinstance(x,str) or not 1<=len(x)<=300 for x in rule['sections']):raise ValueError('Provide the checked statutory sections.')
+            rule={key:rule[key] for key in ['name','days','law','url','note','remedy','reviewed','checked_url','check_note','change_summary','verification','sections','enabled']}
+
             if type(rule.get('enabled'))!=bool:raise ValueError('Choose whether the state is enabled.')
             from datetime import date
-            date.fromisoformat(rule['reviewed'])
+            if date.fromisoformat(rule['reviewed'])>date.today():raise ValueError('Source-check date cannot be in the future.')
             rid=c.execute('INSERT INTO rule_versions(state,data,status,created,actor) VALUES(?,?,?,?,?)',(state,pack(rule),'draft',int(time.time()),actor)).lastrowid;audit(c,actor,'rule_draft',rid,None,rule)
         elif action in ['rule_publish','rule_restore']:
             version=c.execute('SELECT * FROM rule_versions WHERE id=?',(int(d['id']),)).fetchone()
