@@ -135,3 +135,6 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 #checkout .checkout-consent input{width:20px;height:20px;min-height:20px;flex:0 0 20px;margin:3px 0 0}
 #checkout #simulate-pay:disabled{opacity:.5;cursor:not-allowed}
 @media(max-width:768px){#checkout .checkout-legal p,#checkout .checkout-consent{font-size:15px}}
+
+/* Source provenance and readable law history */
+.law-intro {margin-bottom:24px}.law-history {margin-top:24px;border-top:1px solid #d9d9df;padding-top:16px}.law-history summary {cursor:pointer;min-height:44px;font-weight:600}.law-version {padding:16px 0;border-top:1px solid #d9d9df}.library-card h3 {font-size:18px;margin:22px 0 8px}.library-card a {overflow-wrap:anywhere}.library-card li {margin-bottom:8px;line-height:1.6}.law-version h4 {margin:0}
