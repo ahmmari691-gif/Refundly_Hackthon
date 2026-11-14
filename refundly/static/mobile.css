@@ -105,3 +105,17 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
  .navigation .button.small{width:100%;margin:0}.navigation .staff-link{margin-left:auto}
  .page-staff .stats{grid-template-columns:1fr}
 }
+
+/* White brand mark on dark surfaces; screen removes the JPEG's paper background. */
+.page-home footer .refundly-logo,
+.page-staff .login-story .refundly-logo,
+.on-dark .refundly-logo{
+ background:transparent;
+ border-radius:0;
+ mix-blend-mode:screen;
+}
+.page-home footer .refundly-logo img,
+.page-staff .login-story .refundly-logo img,
+.on-dark .refundly-logo img{
+ filter:grayscale(1) contrast(10) invert(1);
+}
