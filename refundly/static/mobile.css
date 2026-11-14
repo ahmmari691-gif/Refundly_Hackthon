@@ -127,3 +127,11 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .hero .legal-disclaimer{max-width:680px;margin:24px auto 0}
 .page-review .legal-disclaimer{margin-top:22px}
 @media(max-width:768px){.legal-disclaimer{padding:16px}.legal-disclaimer p{font-size:15px}.legal-disclaimer strong{font-size:17px}}
+
+#checkout{max-height:90vh;max-height:90dvh;overflow-y:auto}
+#checkout .checkout-legal{margin:18px 0;padding:16px}
+#checkout .checkout-legal p{font-size:14px;line-height:1.65;margin:8px 0 0}
+#checkout .checkout-consent{display:flex;align-items:flex-start;gap:12px;font-size:14px;line-height:1.6;font-weight:400;margin:20px 0;color:#414b61;cursor:pointer}
+#checkout .checkout-consent input{width:20px;height:20px;min-height:20px;flex:0 0 20px;margin:3px 0 0}
+#checkout #simulate-pay:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:768px){#checkout .checkout-legal p,#checkout .checkout-consent{font-size:15px}}
