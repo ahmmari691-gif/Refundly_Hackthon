@@ -6,7 +6,7 @@
 <p align="center"><strong>Your deposit. Your next move.</strong><br>Understand rental deductions, explore your state's rules, and put your dispute in writing.</p>
 <p align="center">
   <a href="https://refundly-sxo7.onrender.com">Live demo</a> ·
-  <a href="https://refundly-sxo7.onrender.com/review?example=1">Try an example</a> ·
+  
   <a href="#staff-access--account-setup">Staff access</a>
 </p>
 
