@@ -165,7 +165,7 @@ There is no self-service staff registration or password-recovery flow in this de
 
 
 
-**References**
+**Sources**
 1. California Courts. (n.d.). Security deposits. California Courts Self-Help Guide. https://selfhelp.courts.ca.gov/guide-security-deposits-california⁠
 
 2. Texas State Law Library. (n.d.). Security deposits. https://guides.sll.texas.gov/landlord-tenant-law/security-deposits⁠
