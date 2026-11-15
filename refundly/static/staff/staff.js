@@ -73,9 +73,9 @@ function demoRequest(path,body={}) {
 }
 const demoEntry=document.createElement('section');
 demoEntry.setAttribute('aria-label','Try the staff demo');
-demoEntry.style.cssText='margin:24px 0;padding:20px;background:#f1f0f5;border:1px solid #dad9e2;border-radius:8px';
-demoEntry.innerHTML='<h3 style="margin:0 0 10px">Explore the workspace</h3><p>No password or authenticator needed. Try both roles with sample data.</p><div style="display:flex;gap:12px;flex-wrap:wrap"><a class="button" href="/staff.html?demo=admin">Demo admin ↗</a><a class="secondary" href="/staff.html?demo=manager" style="display:inline-flex;align-items:center;min-height:44px;padding:12px 18px">Demo manager ↗</a></div><p class="hint">Changes are temporary and affect this demo tab only. Use fictional information.</p>';
-$('#login-form').before(demoEntry);
+demoEntry.style.cssText='display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 18px';
+demoEntry.innerHTML='<a href="/staff.html?demo=admin" style="display:inline-flex;align-items:center;padding:7px 12px;border:1px solid #d5d4df;border-radius:5px;background:transparent;color:#303858;font-size:13px;line-height:20px;text-decoration:none">Demo admin</a><a href="/staff.html?demo=manager" style="display:inline-flex;align-items:center;padding:7px 12px;border:1px solid #d5d4df;border-radius:5px;background:transparent;color:#303858;font-size:13px;line-height:20px;text-decoration:none">Demo manager</a>';
+$('#login-form .hint').after(demoEntry);
 if(demoRole){document.querySelector('.demo-pill').textContent='DEMO '+demoRole.toUpperCase()+' · TEMPORARY DATA';$('#logout').textContent='Exit demo ↗';}
 
 request('me').then(enter).catch(()=>{});
