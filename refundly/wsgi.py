@@ -2,7 +2,7 @@
 import io
 import os
 from urllib.parse import urlsplit
-from flask import Flask, Response, request, send_from_directory
+from flask import Flask, Response, request, send_from_directory, redirect
 
 os.environ.setdefault('REFUNDLY_HOSTED', '1')
 origin = (os.environ.get('PUBLIC_BASE_URL') or os.environ.get('RENDER_EXTERNAL_URL', '')).rstrip('/')
@@ -71,4 +71,9 @@ def api(path):
 @app.get('/')
 @app.get('/<path:path>')
 def static_files(path='index.html'):
-    return send_from_directory(ROOT / 'static', path)
+    pages = {'review': 'review.html', 'staff': 'staff.html', 'policies': 'policies.html'}
+    reverse = {v: k for k, v in pages.items()}
+    if path in reverse:
+        query = ('?' + request.query_string.decode('latin-1')) if request.query_string else ''
+        return redirect('/' + reverse[path] + query, code=308)
+    return send_from_directory(ROOT / 'static', pages.get(path, path))

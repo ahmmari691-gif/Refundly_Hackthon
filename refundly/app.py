@@ -120,6 +120,12 @@ class Handler(SimpleHTTPRequestHandler):
         if self.path=='/api/config':return self.respond(200,{k:v for k,v in staff.configuration().items() if k!='announcement'})
         if self.path=='/api/rules': return self.respond(200,staff.rules_snapshot(RULES))
         if self.path=='/health': return self.respond(200,{'ok':True})
+        path, sep, query = self.path.partition('?')
+        pages = {'/review': '/review.html', '/staff': '/staff.html', '/policies': '/policies.html'}
+        reverse = {v: k for k, v in pages.items()}
+        if path in reverse:
+            self.send_response(308); self.send_header('Location', reverse[path] + (sep + query if sep else '')); self.send_header('Content-Length', '0'); self.end_headers(); return
+        if path in pages: self.path = pages[path] + (sep + query if sep else '')
         return super().do_GET()
     def do_POST(self):
         if not self.valid_host():return self.respond(403,{"error":"Local host required."})
