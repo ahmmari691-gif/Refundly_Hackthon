@@ -10,7 +10,7 @@ fetch('/api/config').then(r=>r.json()).then(c=>{config=c;$('#generate').textCont
 function updateTotals(){const d=data(),sum=d.deductions.reduce((s,r)=>s+(+r.amount||0),0),held=(+d.deposit||0)-(+d.returned||0);$('#deduction-totals').textContent='Listed: '+usd(sum)+' · Already returned: '+usd(+d.returned||0)+' · Unexplained: '+usd(Math.max(0,held-sum));}
 function saveDraft(){updateTotals();if(restoring)return;try{sessionStorage.setItem('refundly-draft',JSON.stringify(data()));}catch{}}
 form.addEventListener('input',saveDraft);$('#identity').addEventListener('input',()=>{saveDraft();$('#letterbox').hidden=true;});
-function clearDraft(){sessionStorage.removeItem('refundly-draft');location.href='/review.html';}
+function clearDraft(){sessionStorage.removeItem('refundly-draft');location.href='/review';}
 $('#clear-draft').onclick=clearDraft;
 try{const d=JSON.parse(sessionStorage.getItem('refundly-draft')||'null');if(d){restoring=true;for(const [k,v] of Object.entries(d)){if(form.elements[k]){if(form.elements[k].type==='checkbox')form.elements[k].checked=v;else form.elements[k].value=v;}}(d.deductions||[]).forEach(addRow);['tenant','landlord','property','forward_address'].forEach(k=>$('#'+k).value=d[k]||'');restoring=false;}}catch{}
 updateTotals();
