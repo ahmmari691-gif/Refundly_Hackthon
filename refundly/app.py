@@ -20,6 +20,37 @@ def day(value):
     try: return date.fromisoformat(value)
     except (TypeError,ValueError): raise ValueError('Enter valid dates.')
 
+def compensation(state, deposit, review_amount):
+    """Conditional legal context, never an eligibility decision or added recovery."""
+    common=dict(amount=None, checked='2026-11-15',
+        disclaimer='Not included in your amount to review or demand letter. A missed deadline alone does not establish entitlement. A court decides eligibility and any award; local rules and exceptions may apply.')
+    details={
+        'CA':dict(label='Conditional additional-damages ceiling',amount=float(deposit*2),
+            explanation='Up to twice the original security deposit, in addition to actual damages, if a court finds bad-faith retention. This ceiling is not an estimate of what you will receive.',
+            basis='2 × original deposit',law='California Civil Code § 1950.5(l) · official DRE guidance',
+            url='https://dre.ca.gov/publications/ResourceGuidebook/gb10_movingout.html'),
+        'NY':dict(label='Conditional punitive-damages ceiling',amount=float(deposit*2),
+            explanation='Up to twice the deposit, in addition to actual damages, for a willful violation of the covered provisions. Rent-regulated and other excluded housing requires separate review.',
+            basis='2 × original deposit',law='N.Y. General Obligations Law § 7-108(1-a)(g)',
+            url='https://www.nysenate.gov/legislation/laws/GOB/7-108'),
+        'TX':dict(label='Conditional statutory recovery — not an extra bonus',
+            explanation='$100 + three times the amount a court finds wrongfully withheld, plus reasonable attorney fees, for bad-faith retention. Do not add this formula to the deposit again. Your disputed amount is not a court finding, so no automatic dollar award is calculated.',
+            basis='$100 + 3 × court-established wrongful withholding; reasonable attorney fees may also apply',law='Texas Property Code § 92.109(a)',
+            url='https://tcss.legis.texas.gov/resources/PR/htm/PR.92.htm#92.109'),
+        'IL':dict(label='Conditional statutory recovery — individual review needed',
+            explanation='Twice the deposit amount due, plus court costs and reasonable attorney fees, if the court finds refusal to provide the required itemization, or bad-faith itemization, together with failure to return the amount due on time. This is not automatically two extra deposits. Full-text recheck remains pending; no dollar award is calculated.',
+            basis='2 × deposit amount due, subject to the statutory findings',law='765 ILCS 710/1(c)',
+            url='https://www.ilga.gov/Legislation/ILCS/Fulltext?DocName=076507100K1'),
+        'FL':dict(label='No automatic damages multiplier under this section',
+            explanation='Late claim notice may forfeit use of the deposit, while a separate damages claim may remain available. The prevailing party in a deposit action may recover court costs and reasonable attorney fees. This section does not provide automatic double or triple damages.',
+            basis='Costs and fees depend on the court outcome',law='Florida Statutes § 83.49(3)',
+            url='https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0083/Sections/0083.49.html')}
+    result={**common,**details[state]}
+    if review_amount<=0:
+        result['amount']=None
+        result['basis']='No disputed or unexplained balance identified in this review.'
+    return result
+
 def analyze(d):
     active_rules=staff.rules_snapshot(RULES)
     if not isinstance(d,dict) or d.get('state') not in active_rules: raise ValueError('Select a supported state.')
@@ -57,7 +88,8 @@ def analyze(d):
     if d['state']=='CA' and total>125 and any(not r.get('receipt') for r in rows): procedure+=' Check missing receipts, permitted estimates, and documentation exceptions.'
     uncertain=d['state']=='TX' and not d.get('forwarding')
     if uncertain: procedure='Texas deadline needs individual review: confirm when the written forwarding address was provided.'
-    return dict(rule=rule,rows=results,disputed=float(sum(Decimal(str(r['amount'])) for r in results if r['status']!='Likely lawful')),withheld=float(held),unaccounted=float(held-total),deadline=None if uncertain else str(deadline),procedure=procedure,objection_deadline=str(received+timedelta(days=15)) if d['state']=='FL' and received else None)
+    review_amount=sum(Decimal(str(r['amount'])) for r in results if r['status']!='Likely lawful')+held-total
+    return dict(compensation=compensation(d['state'],deposit,review_amount),rule=rule,rows=results,disputed=float(sum(Decimal(str(r['amount'])) for r in results if r['status']!='Likely lawful')),withheld=float(held),unaccounted=float(held-total),deadline=None if uncertain else str(deadline),procedure=procedure,objection_deadline=str(received+timedelta(days=15)) if d['state']=='FL' and received else None)
 
 def letter(d,r):
     disputed=[x for x in r['rows'] if x['status']!='Likely lawful']
