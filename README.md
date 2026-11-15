@@ -160,3 +160,24 @@ There is no self-service staff registration or password-recovery flow in this de
 ---
 
 **Refundly — a clearer starting point for your next move.**
+
+---
+
+
+
+**References**
+1. California Courts. (n.d.). Security deposits. California Courts Self-Help Guide. https://selfhelp.courts.ca.gov/guide-security-deposits-california⁠
+
+2. Texas State Law Library. (n.d.). Security deposits. https://guides.sll.texas.gov/landlord-tenant-law/security-deposits⁠
+
+3. U.S. Bureau of Labor Statistics. (2026). Employment status of the civilian noninstitutional population by age, sex, and race, 2025 annual averages. https://www.bls.gov/cps/cpsaat03.htm⁠
+
+4. U.S. Census Bureau. (2024). American Community Survey: Tenure (Table B25003). https://data.census.gov/table/ACSDT1Y2024.B25003⁠
+
+5. U.S. Census Bureau. (2024). American Community Survey: Tenure by units in structure (Table B25032). https://data.census.gov/table/ACSDT1Y2024.B25032⁠
+
+6. U.S. Census Bureau. (2025). American Community Survey: Tenure (Table B25003). https://data.census.gov/table/ACSDT1Y2025.B25003⁠
+
+7. Zillow. (2024). Consumer Housing Trends Report 2024. Zillow Research. https://www.zillow.com/research/⁠
+
+8. Zillow. (2026). Consumer Housing Trends Report 2026. Zillow Research. https://www.zillow.com/research/⁠
