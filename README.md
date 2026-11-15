@@ -6,7 +6,7 @@
 <p align="center"><strong>Your deposit. Your next move.</strong><br>Understand rental deductions, explore your state's rules, and put your dispute in writing.</p>
 <p align="center">
   <a href="https://refundly-sxo7.onrender.com">Live demo</a> ·
-  <a href="https://refundly-sxo7.onrender.com/review.html?example=1">Try an example</a> ·
+  <a href="https://refundly-sxo7.onrender.com/review?example=1">Try an example</a> ·
   <a href="#staff-access--account-setup">Staff access</a>
 </p>
 
@@ -112,7 +112,7 @@ Set the hosted administrator variables described below before the first launch. 
 
 ### Explore without an account
 
-Open [Staff sign-in](https://refundly-sxo7.onrender.com/staff.html) and select **Demo admin** or **Demo manager** below the first-sign-in hint.
+Open [Staff sign-in](https://refundly-sxo7.onrender.com/staff) and select **Demo admin** or **Demo manager** below the first-sign-in hint.
 
 These are browser-only demonstrations with synthetic data. They do not grant real administrator access. Changes are temporary, and creating a staff member in this mode does **not** create a real login.
 
@@ -125,7 +125,7 @@ On the first local run with an empty staff database, the app generates accounts 
 
 Each receives a unique random password. Find the credentials in **`refundly/.local/staff-access.txt`** (or `.local/staff-access.txt` when already inside `refundly`). The file is generated locally; it is not supplied in the repository.
 
-1. Open `http://127.0.0.1:8000/staff.html`.
+1. Open `http://127.0.0.1:8000/staff`.
 2. Enter the generated email and password. Leave **Authenticator code** blank on first sign-in.
 3. Add the displayed setup key to a time-based authenticator app.
 4. Enter its current six-digit code to finish enrollment.
@@ -143,7 +143,7 @@ In the Render service's environment settings, configure:
 
 The app creates this administrator **only when the staff database contains no users**. Updating these variables does not reset an existing account's password. Hosted mode does not seed the local demo administrator and manager accounts.
 
-After deployment, open `/staff.html` and complete the same authenticator enrollment described above. Do not put real passwords or authenticator keys in this README, source files, or commits.
+After deployment, open `/staff` and complete the same authenticator enrollment described above. Do not put real passwords or authenticator keys in this README, source files, or commits.
 
 ### Add another administrator or manager
 
@@ -151,7 +151,7 @@ After deployment, open `/staff.html` and complete the same authenticator enrollm
 2. Open **Team & access**.
 3. Enter the staff member's name and email, and select **admin** or **manager**.
 4. Create the account and share the generated password privately. **No email is sent automatically.**
-5. The new staff member signs in at `/staff.html` and enrolls an authenticator.
+5. The new staff member signs in at `/staff` and enrolls an authenticator.
 
 Managers work with the synthetic support queue, quality review, and response templates. Administrators additionally manage state rules, demo pricing and payments, staff access, website settings, and audit records. Administrators can change roles, disable access, and end staff sessions.
 
